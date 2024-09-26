@@ -43,6 +43,7 @@ interface SignatureMakerProps {
   uploadTypeButtonStyle?: string,
   uploadTypeButtonActiveClass?: string,
   uploadTypeButtonActiveStyle?: string,
+  fontUrl?: string,
   className?: string,
   style?: React.CSSProperties,
   onSave?: (detail: any) => void,
@@ -90,6 +91,7 @@ const SignatureMaker = ({
   uploadTypeButtonStyle = '',
   uploadTypeButtonActiveClass = '',
   uploadTypeButtonActiveStyle = '',
+  fontUrl = '',
   className = '',
   style = {},
   onSave = () => {},
@@ -174,6 +176,7 @@ const SignatureMaker = ({
       'data-upload-type-button-style': uploadTypeButtonStyle,
       'data-upload-type-button-active-class': uploadTypeButtonActiveClass,
       'data-upload-type-button-active-style': uploadTypeButtonActiveStyle,
+      'data-font-url': fontUrl,
       ref: ref,
       className,
       style
