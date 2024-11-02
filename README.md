@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://www.docuseal.co/online-signature" target="_blank">
+  <a href="https://www.docuseal.com/online-signature" target="_blank">
     <img width="600" height="356" src='https://github.com/user-attachments/assets/305904a9-291f-416d-ac32-baaf22970450' alt='Signature Maker'>
   </a>
 </p>
@@ -15,11 +15,11 @@ Signature Maker is a React component that lets users draw or type their signatur
 
 ## Demo
 
-Try the live demo [here](https://www.docuseal.co/online-signature)
+Try the live demo [here](https://www.docuseal.com/online-signature)
 
 ## Documentation
 
-Check out the full documentation [here](https://www.docuseal.co/docs/embedded/signature#react).
+Check out the full documentation [here](https://www.docuseal.com/docs/embedded/signature#react).
 
 ## Installation
 
@@ -260,7 +260,7 @@ onSave
 onChange
 ````
 
-The full documentation with detailed configuration and event descriptions can be found [here](https://www.docuseal.co/docs/embedded/signature#react).
+The full documentation with detailed configuration and event descriptions can be found [here](https://www.docuseal.com/docs/embedded/signature#react).
 
 # License
 
