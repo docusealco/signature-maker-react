@@ -1,40 +1,50 @@
 {
   "name": "@docuseal/signature-maker-react",
-  "version": "1.0.2",
-  "description": "React component for drawing signatures",
+  "version": "1.1.0",
+  "description": "React component for drawing, typing and uploading signatures",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
-  "author": "Alex Turchyn <alex@docuseal.com>",
+  "files": [
+    "dist",
+    "!dist/*.tsbuildinfo"
+  ],
+  "author": "DocuSeal <support@docuseal.com>",
   "license": "MIT",
   "repository": "https://github.com/docusealco/signature-maker-react",
   "homepage": "https://github.com/docusealco/signature-maker-react#readme",
   "bugs": {
     "url": "https://github.com/docusealco/signature-maker-react/issues"
   },
-  "devDependencies": {
-    "@types/react": "^18.3.5",
-    "@typescript-eslint/eslint-plugin": "^8.4.0",
-    "@typescript-eslint/parser": "^8.4.0",
-    "esbuild": "^0.23.1",
-    "eslint": "^9.10.0",
-    "react": "^18.3.1",
-    "typescript": "^5.5.4"
-  },
   "keywords": [
     "react-signature",
     "signature",
-    "signature-drawing"
+    "signature-drawing",
+    "signature-pad"
   ],
-  "files": [
-    "dist",
-    "!dist/*.tsbuildinfo"
-  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "build": "node esbuild.config.js && tsc --emitDeclarationOnly --outDir dist",
-    "lint": "eslint src/**/*.ts --fix"
+    "build": "node esbuild.config.js && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "playwright test",
+    "prepublishOnly": "yarn build && yarn test"
   },
   "dependencies": {
-    "@docuseal/signature-maker-js": "^1.0.0"
+    "@docuseal/signature-maker-js": "^1.1.1"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "esbuild": "^0.28.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^5.9.3"
   }
 }

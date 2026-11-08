@@ -6,153 +6,80 @@
 
 # Signature Maker React
 
-Signature Maker is a React component that lets users draw or type their signature.
+React component that lets users draw, type or upload their signature and returns it as a PNG. A thin wrapper around the [signature-maker-js](https://github.com/docusealco/signature-maker-js) web component.
 
-#### Other implementations
-
-- [Vanilla JS](https://github.com/docusealco/signature-maker-js)
-- [Vue](https://github.com/docusealco/signature-maker-vue)
-
-## Demo
-
-Try the live demo [here](https://www.docuseal.com/online-signature)
-
-## Documentation
-
-Check out the full documentation [here](https://www.docuseal.com/docs/embedded/signature#react).
+[Live demo](https://www.docuseal.com/online-signature) · [Documentation](https://www.docuseal.com/docs/embedded/signature#react) · [JS](https://github.com/docusealco/signature-maker-js) · [Vue](https://github.com/docusealco/signature-maker-vue)
 
 ## Installation
 
 ```bash
 npm install @docuseal/signature-maker-react
-```
-
-OR
-
-```bash
+# or
 yarn add @docuseal/signature-maker-react
 ```
 
+Requires React 18 or 19. Works with server-side rendering.
+
 ## Usage
 
-Basic Usage with standard styles and default signature saving behavior:
+No handlers needed: the Submit button downloads the signature as a PNG.
 
 ```jsx
-import React from 'react'
 import { SignatureMaker } from '@docuseal/signature-maker-react'
 
 export function App() {
-  return (
-    <div className="app">
-      <SignatureMaker downloadOnSave={true} />
-    </div>
-  );
+  return <SignatureMaker downloadOnSave={true} />
 }
 ```
 
----
-
-Usage with default styles but custom signature saving behavior, such as uploading the signature to a server:
+Handle the signature when the user clicks Submit:
 
 ```jsx
-import React from 'react'
 import { SignatureMaker } from '@docuseal/signature-maker-react'
 
 export function App() {
-  const handleSave = (event) => {
+  const handleSave = (detail) => {
     fetch('/save-signature', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ file: event.base64 }),
-    });
+      body: JSON.stringify({ file: detail.base64 }),
+    })
   }
 
-  return (
-    <div className="app">
-      <SignatureMaker onSave={handleSave} />
-    </div>
-  );
+  return <SignatureMaker onSave={handleSave} />
 }
 ```
 
----
-
-Usage without a save signature button, embedded in another form. The signature will be stored in a form field named `signature`:
+Embed in a form without the Submit button and track every change:
 
 ```jsx
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { SignatureMaker } from '@docuseal/signature-maker-react'
 
 export function App() {
-  const [signatureBase64, setSignatureBase64] = useState(null);
-
-  const handleSignatureChange = (event) => {
-    setSignatureBase64(event.base64);
-  }
+  const [signatureBase64, setSignatureBase64] = useState(null)
 
   const handleSubmit = (event) => {
+    event.preventDefault()
+
     fetch('/submit-form', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: event.target.name.value,
-        signature: signatureBase64
-      }),
-    });
+      body: JSON.stringify({ name: event.target.name.value, signature: signatureBase64 }),
+    })
   }
 
   return (
-    <div className="app">
-      <form id="myForm" onSubmit={handleSubmit}>
-        <input name="name" type="text" />
-        <SignatureMaker
-          withSubmit={false}
-          onChange={handleSignatureChange}
-        >
-        </SignatureMaker>
-        <button type="submit">Submit</button>
-      </form>
-    </div>
-  );
-}
-
-```
-
----
-
-Usage without a save signature button and tracking each signature change:
-
-```jsx
-import React from 'react'
-import { SignatureMaker } from '@docuseal/signature-maker-react'
-
-export function App() {
-  const handleChange = (event) => {
-    if (event.base64) {
-      fetch('/background-save-signature', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ file: event.base64 }),
-      });
-    } else {
-      console.log('No signature to save');
-    }
-  }
-
-  return (
-    <div className="app">
-      <SignatureMaker
-        withSubmit={false}
-        onChange={handleChange}
-      />
-    </div>
-  );
+    <form onSubmit={handleSubmit}>
+      <input name="name" type="text" />
+      <SignatureMaker withSubmit={false} onChange={(detail) => setSignatureBase64(detail.base64)} />
+      <button type="submit">Submit</button>
+    </form>
+  )
 }
 ```
 
----
-
-Usage with custom button labels and classes (DaisyUI):
+Restyle with CSS classes and translate the labels. A full DaisyUI example:
 
 ```jsx
 import React from 'react'
@@ -188,80 +115,52 @@ export function App() {
 }
 ```
 
----
+## Events
 
-Usage with customization of certain elements using CSS classes and styles:
+| Prop | When | Argument |
+|---|---|---|
+| `onSave` | Submit button clicked | `{ base64, blob }` |
+| `onChange` | Signature drawn, typed, uploaded or cleared | `{ base64, blob }`, both `null` when empty |
 
-```jsx
-import React from 'react'
-import { SignatureMaker } from '@docuseal/signature-maker-react'
+`ref` gives access to the underlying element with `enableDrawPanel()`, `enableTextPanel()`, `enableUploadPanel()` and the [signature_pad](https://github.com/szimek/signature_pad) instance as `pad`. TypeScript declarations are included:
 
-export function App() {
-  return (
-    <div className="app">
-      <SignatureMaker
-        saveButtonClass="btn btn-neutral text-white text-base w-full"
-        canvasClass="bg-white border border-base-300 rounded-2xl w-full"
-        canvasStyle="border: 2px solid #000;"
-      />
-    </div>
-  );
-}
+```tsx
+import { useRef } from 'react'
+import { SignatureMaker, type SignatureDetail, type SignatureMakerElement } from '@docuseal/signature-maker-react'
+
+const ref = useRef<SignatureMakerElement>(null)
+const handleSave = (detail: SignatureDetail) => console.log(detail.base64)
+
+<SignatureMaker ref={ref} onSave={handleSave} />
 ```
 
-## Customization
+## Props
 
-Signature Maker can be customized with the following attributes:
+Behavior:
 
-```
-downloadOnSave
-withTyped
-withDrawn
-withUpload
-withColorSelect
-withSubmit
-controlButtonsContainerClass
-controlButtonsContainerStyle
-saveButtonText
-saveButtonClass
-saveButtonStyle
-saveButtonDisabledClass
-saveButtonsDisabledStyle
-undoButtonText
-undoButtonClass
-undoButtonStyle
-clearButtonText
-clearButtonClass
-clearButtonStyle
-textInputPlaceholder
-textInputClass
-textInputStyle
-canvasClass
-canvasStyle
-typeButtonsContainerClass
-typeButtonsContainerStyle
-drawTypeButtonText
-drawTypeButtonClass
-drawTypeButtonStyle
-drawTypeButtonActiveClass
-drawTypeButtonActiveStyle
-textTypeButtonText
-textTypeButtonClass
-textTypeButtonStyle
-textTypeButtonActiveClass
-textTypeButtonActiveStyle
-uploadTypeButtonText
-uploadTypeButtonClass
-uploadTypeButtonStyle
-uploadTypeButtonActiveClass
-uploadTypeButtonActiveStyle
-fontUrl
-onSave
-onChange
-````
+| Prop | Default | Description |
+|---|---|---|
+| `withDrawn` | `true` | Show the Draw tab |
+| `withTyped` | `true` | Show the Type tab |
+| `withUpload` | `true` | Show the Upload tab |
+| `withColorSelect` | `true` | Show the pen color picker |
+| `withSubmit` | `true` | Show the Submit button |
+| `downloadOnSave` | `false` | Download the PNG on Submit |
+| `fontUrl` | Dancing Script | WOFF font used for typed signatures |
+| `className`, `style` | | Applied to the `<signature-maker>` element itself |
 
-The full documentation with detailed configuration and event descriptions can be found [here](https://www.docuseal.com/docs/embedded/signature#react).
+Labels: `saveButtonText`, `undoButtonText`, `clearButtonText`, `drawTypeButtonText`, `textTypeButtonText`, `uploadTypeButtonText`, `textInputPlaceholder`.
 
-# License
+Styles: every element below accepts `<element>Class` and `<element>Style` (a CSS string). A class replaces the default inline styles, a style overrides them. State variants are appended to the base class or style.
+
+| Element | State variants |
+|---|---|
+| `saveButton` | `saveButtonDisabledClass`, `saveButtonsDisabledStyle` |
+| `drawTypeButton`, `textTypeButton`, `uploadTypeButton` | `ActiveClass`, `ActiveStyle` |
+| `undoButton`, `clearButton`, `textInput`, `canvas`, `typeButtonsContainer`, `controlButtonsContainer` | |
+
+Example: `drawTypeButtonClass="tab"` plus `drawTypeButtonActiveClass="tab-active"` renders `class="tab tab-active"` while Draw is selected.
+
+## License
 
 MIT

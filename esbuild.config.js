@@ -3,22 +3,14 @@ const { build } = require("esbuild");
 const shared = {
   bundle: true,
   entryPoints: ["./src/index.ts"],
-  external: ["react"],
+  packages: "external",
   logLevel: "info",
   minify: true,
   sourcemap: false,
+  target: "es2020",
 };
 
-build({
-  ...shared,
-  format: "esm",
-  outfile: "./dist/index.esm.js",
-  target: ["esnext", "node12.22.0"],
-});
-
-build({
-  ...shared,
-  format: "cjs",
-  outfile: "./dist/index.cjs.js",
-  target: ["esnext", "node12.22.0"],
-});
+Promise.all([
+  build({ ...shared, format: "esm", outfile: "./dist/index.esm.js" }),
+  build({ ...shared, format: "cjs", outfile: "./dist/index.cjs.js" }),
+]);
